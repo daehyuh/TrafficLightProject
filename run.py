@@ -1,6 +1,5 @@
 import sys
 
-# import self as self
 from PyQt5 import uic
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *

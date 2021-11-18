@@ -103,6 +103,7 @@ class Ui_Desing(object):
         self.retranslateUi(Desing)
         QtCore.QMetaObject.connectSlotsByName(Desing)
 
+
     def retranslateUi(self, Desing):
         _translate = QtCore.QCoreApplication.translate
         Desing.setWindowTitle(_translate("Desing", "WizardPage"))

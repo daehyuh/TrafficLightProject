@@ -62,7 +62,7 @@ class Thread1(QThread):
                                                    "min-height: 10px;\n"
                                                    "min-width: 10px;")
                     sleep(1)
-                    self.parent.LEFT.setStyleSheet("background-color: rgb(0, 0, 0);\n"
+                    self.parent.LEFT.setStyleSheet("color: rgb(0, 0, 0);\n"
                                                    "border-radius: 45px;\n"
                                                    "min-height: 10px;\n"
                                                    "min-width: 10px;")

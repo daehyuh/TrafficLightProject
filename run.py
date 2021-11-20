@@ -108,9 +108,6 @@ class WindowClass(QMainWindow, form_class):
         self.tableWidget.setItem(rowPosition, 0, QTableWidgetItem(datetime.today().strftime("%Y/%m/%d\n%H:%M:%S")))
         self.tableWidget.setItem(rowPosition, 1, QTableWidgetItem(signal))
         self.tableWidget.resizeRowsToContents()
-        # self.tableWidget.resizeColumnToContents(0)
-        # self.tableWidget.resizeColumnToContents(1)
-        # self.tableWidget.resizeColumnsToContents()
         self.tableWidget.scrollToBottom()
 
 

@@ -8,10 +8,6 @@ from time import sleep
 import csv
 import os
 
-root = 'C:/traffic_data/'
-file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
-extension = '.csv'
-path = root + file_name + extension
 form_class = uic.loadUiType("traffic_ui.ui")[0]
 stop_check = True
 
@@ -64,6 +60,17 @@ class WindowClass(QMainWindow, form_class):
     def button2Function(self):
         self.h1.stop()
         data = []
+        root = 'C:/traffic_data/'
+        root2 = 'C:/traffic_data/' + datetime.today().strftime("%Y-%m-%d") + "/"
+        file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
+        extension = '.csv'
+        path = root2 + file_name + extension
+
+        try:
+            if not os.path.exists(root2):
+                os.makedirs(root2)
+        except OSError:
+            print('이미 파일이 있습니다' + root2)
 
         row = self.tableWidget.rowCount()
         for row in range(0, row):

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>936</width>
-    <height>829</height>
+    <width>986</width>
+    <height>737</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,6 +17,9 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="toolTipDuration">
+    <number>-1</number>
+   </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <property name="leftMargin">
      <number>10</number>
@@ -30,126 +33,18 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <item row="0" column="4">
+    <item row="1" column="4">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="3">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QWidget" name="traffic_light_widget" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>450</width>
-            <height>150</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(45, 45, 45);</string>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QLabel" name="RED">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-color: rgb(0, 0, 0);
-border-radius: 50px;
-min-height: 100px;
-min-width: 100px;</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="YELLOW">
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-border-radius: 50px;
-min-height: 100px;
-min-width: 100px;</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="LEFT">
-             <property name="minimumSize">
-              <size>
-               <width>90</width>
-               <height>90</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-background-color: rgb(0, 0, 0);
-line-height: 100px;
-border-radius: 50px;
-min-height: 90px;
-min-width: 90px;
-</string>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:48pt; font-weight:600;&quot;&gt;←&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="GREEN">
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-border-radius: 50px;
-min-height: 100px;
-min-width: 100px;</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="5" rowspan="6" colspan="2">
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="spacing">
+       <number>7</number>
+      </property>
+      <item row="0" column="2" rowspan="5" colspan="3">
        <widget class="QTreeView" name="treeView">
         <property name="minimumSize">
          <size>
@@ -159,12 +54,18 @@ min-width: 100px;</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" rowspan="6" colspan="3">
+      <item row="1" column="0" rowspan="5" colspan="2">
        <widget class="QTableWidget" name="tableWidget">
         <property name="minimumSize">
          <size>
-          <width>450</width>
-          <height>100</height>
+          <width>500</width>
+          <height>500</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1000</width>
+          <height>16777215</height>
          </size>
         </property>
         <property name="font">
@@ -199,17 +100,136 @@ min-width: 100px;</string>
         </attribute>
         <column>
          <property name="text">
-          <string>Time</string>
+          <string>LED</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>LED</string>
+          <string>TIME</string>
          </property>
         </column>
        </widget>
       </item>
-      <item row="6" column="5" alignment="Qt::AlignVCenter">
+      <item row="0" column="0" colspan="2">
+       <widget class="QWidget" name="traffic_light_widget" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>500</width>
+          <height>150</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1000</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(45, 45, 45);</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="RED">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(0, 0, 0);
+border-radius: 50px;
+min-height: 100px;
+min-width: 100px;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="YELLOW">
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(0, 0, 0);
+border-radius: 50px;
+min-height: 100px;
+min-width: 100px;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="LEFT">
+           <property name="minimumSize">
+            <size>
+             <width>90</width>
+             <height>90</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(0, 0, 0);
+background-color: rgb(0, 0, 0);
+line-height: 100px;
+border-radius: 50px;
+min-height: 90px;
+min-width: 90px;
+</string>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-family:'Arial'; font-size:48pt; font-weight:600;&quot;&gt;←&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="GREEN">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(0, 0, 0);
+border-radius: 50px;
+min-height: 100px;
+min-width: 100px;</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="5" column="2">
        <widget class="QPushButton" name="pushButton">
         <property name="minimumSize">
          <size>
@@ -225,11 +245,11 @@ min-width: 100px;</string>
          </font>
         </property>
         <property name="text">
-         <string>삭제</string>
+         <string>멈춤</string>
         </property>
        </widget>
       </item>
-      <item row="6" column="6" alignment="Qt::AlignVCenter">
+      <item row="5" column="3">
        <widget class="QPushButton" name="pushButton_2">
         <property name="minimumSize">
          <size>
@@ -249,6 +269,26 @@ min-width: 100px;</string>
         </property>
        </widget>
       </item>
+      <item row="5" column="4">
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>맑은 고딕</family>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>삭제</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -258,3 +298,4 @@ min-width: 100px;</string>
  <resources/>
  <connections/>
 </ui>
+

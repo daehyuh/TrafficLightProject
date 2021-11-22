@@ -113,11 +113,6 @@ class WindowClass(QMainWindow, form_class):
                                                    "border: 3px solid rgb(0, 255, 0);\n"
                                                    "min-height: 100px;\n"
                                                    "min-width: 100px;")
-                # # 좌회전 + 빨강
-                # self.RED.setStyleSheet("background-color: rgb(255, 0, 0);\n"
-                #                                    "border-radius: 50px;\n"
-                #                                    "min-height: 100px;\n"
-                #                                    "min-width: 100px;")
 
             if input.__eq__('GREEN'):
                 signal_labels[input].setStyleSheet("background-color: rgb(0, 255, 0);\n"

@@ -75,7 +75,7 @@ class WindowClass(QMainWindow, form_class):
         row = self.tableWidget.rowCount()
         for row in range(0, row):
             data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]])
-
+        print(data)
         f = open(path, "w", newline="")
         wr = csv.writer(f)
         for row in data:

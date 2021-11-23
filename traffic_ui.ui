@@ -56,6 +56,9 @@
       </item>
       <item row="1" column="0" rowspan="5" colspan="2">
        <widget class="QTableWidget" name="tableWidget">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>500</width>
@@ -73,6 +76,9 @@
           <weight>75</weight>
           <bold>true</bold>
          </font>
+        </property>
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
         </property>
         <attribute name="horizontalHeaderVisible">
          <bool>true</bool>

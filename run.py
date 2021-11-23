@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import uic
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFont, QColor, QIcon
 from PyQt5.QtWidgets import *
 from datetime import datetime
 from time import sleep
@@ -53,6 +53,8 @@ class WindowClass(QMainWindow, form_class):
         self.pushButton.clicked.connect(self.button1Function)
         self.pushButton_2.clicked.connect(self.button2Function)
         self.pushButton_3.clicked.connect(self.button3Function)
+
+
 
     def button1Function(self):
         self.h1.stop()
@@ -117,7 +119,8 @@ class WindowClass(QMainWindow, form_class):
                                                    "background-color: rgb(0, 0, 0);\n"
                                                    "line-height: 100px;\n"
                                                    "border-radius: 50px;\n"
-                                                   "border: 3px solid rgb(0, 255, 0);\n"
+                                                   "border: 5px solid rgb(0, 255, 0);\n"
+                                                   "box-sizing: border-box;\n"
                                                    "min-height: 100px;\n"
                                                    "min-width: 100px;")
 

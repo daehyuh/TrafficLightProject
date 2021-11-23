@@ -91,10 +91,17 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(222, 222, 222);</string>
+         <string notr="true">QHeaderView::section {background-color:#909090;color:#FFFFFF;}
+section {background-color:#909090;color:#FFFFFF;}</string>
         </property>
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="rowCount">
+         <number>0</number>
         </property>
         <attribute name="horizontalHeaderVisible">
          <bool>true</bool>

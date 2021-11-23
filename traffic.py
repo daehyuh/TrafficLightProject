@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(986, 737)
+        MainWindow.resize(979, 704)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(".\\icon.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -43,11 +43,13 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.tableWidget.setFont(font)
-        self.tableWidget.setStyleSheet("background-color: rgb(222, 222, 222);")
+        self.tableWidget.setStyleSheet("QHeaderView::section {background-color:#909090;color:#FFFFFF;}\n"
+"section {background-color:#909090;color:#FFFFFF;}")
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setRowCount(0)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(2)
-        self.tableWidget.setRowCount(0)
         item = QtWidgets.QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()

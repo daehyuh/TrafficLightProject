@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import uic
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QFont, QColor, QIcon
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import *
 from datetime import datetime
 from time import sleep
@@ -54,15 +54,13 @@ class WindowClass(QMainWindow, form_class):
         self.pushButton_2.clicked.connect(self.button2Function)
         self.pushButton_3.clicked.connect(self.button3Function)
 
-
-
     def button1Function(self):
         self.h1.stop()
 
     def button2Function(self):
         self.h1.stop()
         data = []
-        root = 'C:/traffic_data/'
+        # root = 'C:/traffic_data/'
         root2 = 'C:/traffic_data/' + datetime.today().strftime("%Y-%m-%d") + "/"
         file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
         extension = '.csv'
@@ -78,21 +76,22 @@ class WindowClass(QMainWindow, form_class):
         for row in range(0, row):
             data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]])
         print(data)
-        f = open(path, "w", newline="")
-        wr = csv.writer(f)
-        for row in data:
-            wr.writerow(row)
-        f.close()
+        if len(data) != 0:
+            f = open(path, "w", newline="")
+            wr = csv.writer(f)
+            for row in data:
+                wr.writerow(row)
+            f.close()
 
         print("저장버튼을 눌렀습니다")
-        self.h1.stop()
         self.tableWidget.setRowCount(0)
+        self.h1.stop()
 
     def button3Function(self):
         print("삭제버튼을 눌렀습니다")
 
     @pyqtSlot(str)
-    def change_traffic_light(self, input):
+    def change_traffic_light(self, inputsignal):
 
         signal_labels = {'RED': self.RED, 'LEFT': self.LEFT, 'YELLOW': self.YELLOW, 'GREEN': self.GREEN}
         signal_lst = [self.RED, self.LEFT, self.YELLOW, self.GREEN]
@@ -103,36 +102,36 @@ class WindowClass(QMainWindow, form_class):
                                  "border-radius: 50px;\n"
                                  "min-height: 100px;\n"
                                  "min-width: 100px;")
-            if input.__eq__('RED'):
-                signal_labels[input].setStyleSheet("background-color: rgb(255, 0, 0);\n"
-                                                   "border-radius: 50px;\n"
-                                                   "min-height: 100px;\n"
-                                                   "min-width: 100px;")
-            if input.__eq__('YELLOW'):
-                signal_labels[input].setStyleSheet("background-color: rgb(255, 255, 0);\n"
-                                                   "border-radius: 50px;\n"
-                                                   "min-height: 100px;\n"
-                                                   "min-width: 100px;")
+            if inputsignal.__eq__('RED'):
+                signal_labels[inputsignal].setStyleSheet("background-color: rgb(255, 0, 0);\n"
+                                                         "border-radius: 50px;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
+            if inputsignal.__eq__('YELLOW'):
+                signal_labels[inputsignal].setStyleSheet("background-color: rgb(255, 255, 0);\n"
+                                                         "border-radius: 50px;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
 
-            if input.__eq__('LEFT'):
-                signal_labels[input].setStyleSheet("color: rgb(0, 255, 0);\n"
-                                                   "background-color: rgb(0, 0, 0);\n"
-                                                   "line-height: 100px;\n"
-                                                   "border-radius: 50px;\n"
-                                                   "border: 5px solid rgb(0, 255, 0);\n"
-                                                   "box-sizing: border-box;\n"
-                                                   "min-height: 100px;\n"
-                                                   "min-width: 100px;")
+            if inputsignal.__eq__('LEFT'):
+                signal_labels[inputsignal].setStyleSheet("color: rgb(0, 255, 0);\n"
+                                                         "background-color: rgb(0, 0, 0);\n"
+                                                         "line-height: 100px;\n"
+                                                         "border-radius: 50px;\n"
+                                                         "border: 5px solid rgb(0, 255, 0);\n"
+                                                         "box-sizing: border-box;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
 
-            if input.__eq__('GREEN'):
-                signal_labels[input].setStyleSheet("background-color: rgb(0, 255, 0);\n"
-                                                   "border-radius: 50px;\n"
-                                                   "min-height: 100px;\n"
-                                                   "min-width: 100px;")
+            if inputsignal.__eq__('GREEN'):
+                signal_labels[inputsignal].setStyleSheet("background-color: rgb(0, 255, 0);\n"
+                                                         "border-radius: 50px;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
 
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.insertRow(rowPosition)
-        lists = [QTableWidgetItem(input), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
+        lists = [QTableWidgetItem(inputsignal), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)

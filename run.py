@@ -1,4 +1,6 @@
 import sys
+from builtins import type
+
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QColor, QIcon
@@ -9,40 +11,31 @@ import csv
 import os
 from glob import glob
 from pathlib import Path
-from PyQt5.QtGui import QIcon
+
+form_class = uic.loadUiType("traffic_ui.ui")[0]
+stop_check = False
 
 
 class StandardItem(QStandardItem):
-    def __init__(self, txt='', font_size=12, set_bold=False, color=QColor(0, 0, 0)):
+    def __init__(self, txt='', font_size=12, path='', set_bold=False, color=QColor(0, 0, 0)):
         super().__init__()
 
-        fnt = QFont('Open Sans', font_size)
+        fnt = QFont('나눔스퀘어_ac', font_size)
         fnt.setBold(set_bold)
 
         self.setEditable(False)
         self.setForeground(color)
         self.setFont(fnt)
         self.setText(txt)
-
-
-def load_project_structure(root, tree):
-    import os
-    from PyQt5.QtWidgets import QTreeWidgetItem
-    for element in os.listdir(root):
-        path_info = root + "/" + element
-        parent_itm = QTreeWidgetItem(tree, [os.path.basename(element)])
-        if os.path.isdir(path_info):
-            load_project_structure(path_info, parent_itm)
-            parent_itm.setIcon(0, QIcon('image/folder.png'))
+        if os.path.isdir(path):
+            self.setText(txt)
+            self.setIcon(QIcon('image/folder.png'))
         else:
-            parent_itm.setIcon(0, QIcon('image/file.png'))
+            self.setText(txt + ".csv")
+            self.setIcon(QIcon('image/file.png'))
 
 
-form_class = uic.loadUiType("traffic_ui.ui")[0]
-stop_check = False
-
-
-class Thread1(QThread):
+class Thread(QThread):
     signal = pyqtSignal(str)
 
     def __init__(self, parent):
@@ -84,17 +77,14 @@ class WindowClass(QMainWindow, form_class):
         self.setupUi(self)
         self.setWindowTitle("신호등")
         self.setFont(QFont('나눔스퀘어_ac', 12))
-        self.h1 = Thread1(self)
+        self.h1 = Thread(self)
         self.h1.signal.connect(self.change_traffic_light)
         self.h1.start()
         self.pushButton.clicked.connect(self.button1Function)
         self.pushButton_2.clicked.connect(self.button2Function)
         self.pushButton_3.clicked.connect(self.button3Function)
-        # load_project_structure("C:/traffic_data/", self.treeWidget)
         self.set_tree_view()
-        self.treeView.setIndentation(0)
-        self.treeModel2 = QStandardItemModel()
-        self.rootNode2 = self.treeModel2.invisibleRootItem()
+        # self.treeView.setIndentation(0)
 
     def button1Function(self):
         self.h1.stop()
@@ -134,7 +124,6 @@ class WindowClass(QMainWindow, form_class):
         self.pushButton.setText("실행")
         self.pushButton.repaint()
 
-
     def set_tree_view(self):
         self.treeView.setHeaderHidden(True)
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -145,20 +134,19 @@ class WindowClass(QMainWindow, form_class):
         paths = glob('C:/traffic_data/*')
 
         for path in paths:
-            folder = StandardItem(Path(path).stem, 16, set_bold=True)
+            folder = StandardItem(Path(path).stem, 16, path)
             files = glob(path + '/*')
             for file in files:
-                imgs = StandardItem(Path(file).stem, 14)
-                folder.appendRow(imgs)
+                f = StandardItem(Path(file).stem, 14, file)
+                folder.appendRow(f)
 
             rootNode.appendRow(folder)
-
         self.treeView.setModel(treeModel)
         self.treeView.collapseAll()
         # self.treeView.doubleClicked.connect(self.new_window)
 
     def button3Function(self):
-
+        self.treeView.selection()[0]
         print("삭제버튼을 눌렀습니다")
 
     @pyqtSlot(str)

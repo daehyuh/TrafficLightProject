@@ -1,6 +1,4 @@
 import sys
-from builtins import type
-
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QColor, QIcon
@@ -46,7 +44,7 @@ class Thread(QThread):
         rdr = csv.reader(f)
 
         for line in rdr:
-            self.date.extend([line[0]])
+            self.date.extend([line[0]])  # 인풋 방식 모름
             # self.date.extend([line[1]])
         f.close()
 
@@ -90,44 +88,55 @@ class WindowClass(QMainWindow, form_class):
         self.h1.stop()
 
     def button2Function(self):
-        global stop_check
-        stop_check = False
-        data = []
-        # root = "C:/traffic_data/"
-        root2 = "C:/traffic_data/" + datetime.today().strftime("%Y-%m-%d") + "/"
-        file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
-        extension = ".csv"
-        path = root2 + file_name + extension
+        buttonReply = QMessageBox.information(
+            self, '저장', "정말로 저장 하시겠습니까?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if buttonReply == QMessageBox.Yes:
+            global stop_check
+            stop_check = False
+            data = []
+            root = "C:/traffic_data/" + datetime.today().strftime("%Y-%m-%d") + "/"
+            file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
+            extension = ".csv"
+            path = root + file_name + extension
 
-        try:
-            if not os.path.exists(root2):
-                os.makedirs(root2)
-        except OSError:
-            print("이미 파일이 있습니다" + root2)
-        self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
-        row = self.tableWidget.rowCount()
-        for row in range(0, row):
-            data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]])
-        print(data)
-        if len(data) != 0:
-            f = open(path, "w", newline="")
-            wr = csv.writer(f)
-            wr.writerow(["신호", "시간"])
-            for row in data:
-                wr.writerow(row)
-            f.close()
-        # load_project_structure("C:/traffic_data/", self.treeWidget)
-        self.set_tree_view()
-        print("저장버튼을 눌렀습니다")
-        self.tableWidget.setRowCount(0)
-        # stop_check = True
-        self.pushButton.setText("실행")
-        self.pushButton.repaint()
+            try:
+                if not os.path.exists(root):
+                    os.makedirs(root)
+            except OSError:
+                print("이미 파일이 있습니다" + root)
+            self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
+            row = self.tableWidget.rowCount()
+            for row in range(0, row):
+                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]])
+            print(data)
+            if len(data) != 0:
+                f = open(path, "w", newline="")
+                wr = csv.writer(f)
+                wr.writerow(["신호", "시간"])
+                for row in data:
+                    wr.writerow(row)
+                f.close()
+
+            self.set_tree_view()
+            print("저장버튼을 눌렀습니다")
+            self.tableWidget.setRowCount(0)
+            self.pushButton.setText("실행")
+            self.pushButton.repaint()
+        else:
+            print('No clicked.')
+
+
+    def new_window(self, value):
+        if not os.path.isdir('frames/' + value.data()):
+            self.dialog = CSVWINDOW(value)
+            self.dialog.show()
 
     def set_tree_view(self):
         self.treeView.setHeaderHidden(True)
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.treeWidget.customContextMenuRequested.connect(self.openMenu)
+        self.treeWidget.customContextMenuRequested.connect(self.openMenu)
 
         treeModel = QStandardItemModel()
         rootNode = treeModel.invisibleRootItem()
@@ -143,18 +152,18 @@ class WindowClass(QMainWindow, form_class):
             rootNode.appendRow(folder)
         self.treeView.setModel(treeModel)
         self.treeView.collapseAll()
-        # self.treeView.doubleClicked.connect(self.new_window)
+        self.treeView.doubleClicked.connect(self.new_window)
 
     def button3Function(self):
-        print(self.treeView.selectedRows())
+        print(self.treeView)
         print("삭제버튼을 눌렀습니다")
 
     @pyqtSlot(str)
-    def change_traffic_light(self, inputsignal):
+    def change_traffic_light(self, inputS):
 
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.insertRow(rowPosition)
-        lists = [QTableWidgetItem(inputsignal), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
+        lists = [QTableWidgetItem(inputS), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)
@@ -170,32 +179,32 @@ class WindowClass(QMainWindow, form_class):
                                  "border-radius: 50px;\n"
                                  "min-height: 100px;\n"
                                  "min-width: 100px;")
-            if inputsignal.__eq__("RED"):
-                signal_labels[inputsignal].setStyleSheet("background-color: rgb(255, 0, 0);\n"
-                                                         "border-radius: 50px;\n"
-                                                         "min-height: 100px;\n"
-                                                         "min-width: 100px;")
-            if inputsignal.__eq__("YELLOW"):
-                signal_labels[inputsignal].setStyleSheet("background-color: rgb(255, 255, 0);\n"
-                                                         "border-radius: 50px;\n"
-                                                         "min-height: 100px;\n"
-                                                         "min-width: 100px;")
+            if inputS.__eq__("RED"):
+                signal_labels[inputS].setStyleSheet("background-color: rgb(255, 0, 0);\n"
+                                                    "border-radius: 50px;\n"
+                                                    "min-height: 100px;\n"
+                                                    "min-width: 100px;")
+            if inputS.__eq__("YELLOW"):
+                signal_labels[inputS].setStyleSheet("background-color: rgb(255, 255, 0);\n"
+                                                    "border-radius: 50px;\n"
+                                                    "min-height: 100px;\n"
+                                                    "min-width: 100px;")
 
-            if inputsignal.__eq__("LEFT"):
-                signal_labels[inputsignal].setStyleSheet("color: rgb(0, 255, 0);\n"
-                                                         "background-color: rgb(0, 0, 0);\n"
-                                                         "line-height: 100px;\n"
-                                                         "border-radius: 50px;\n"
-                                                         "border: 5px solid rgb(0, 255, 0);\n"
-                                                         "box-sizing: border-box;\n"
-                                                         "min-height: 100px;\n"
-                                                         "min-width: 100px;")
+            if inputS.__eq__("LEFT"):
+                signal_labels[inputS].setStyleSheet("color: rgb(0, 255, 0);\n"
+                                                    "background-color: rgb(0, 0, 0);\n"
+                                                    "line-height: 100px;\n"
+                                                    "border-radius: 50px;\n"
+                                                    "border: 5px solid rgb(0, 255, 0);\n"
+                                                    "box-sizing: border-box;\n"
+                                                    "min-height: 100px;\n"
+                                                    "min-width: 100px;")
 
-            if inputsignal.__eq__("GREEN"):
-                signal_labels[inputsignal].setStyleSheet("background-color: rgb(0, 255, 0);\n"
-                                                         "border-radius: 50px;\n"
-                                                         "min-height: 100px;\n"
-                                                         "min-width: 100px;")
+            if inputS.__eq__("GREEN"):
+                signal_labels[inputS].setStyleSheet("background-color: rgb(0, 255, 0);\n"
+                                                    "border-radius: 50px;\n"
+                                                    "min-height: 100px;\n"
+                                                    "min-width: 100px;")
 
 
 if __name__ == "__main__":

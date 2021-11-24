@@ -57,17 +57,7 @@
       <property name="spacing">
        <number>7</number>
       </property>
-      <item row="0" column="2" rowspan="5" colspan="3">
-       <widget class="QTreeView" name="treeView">
-        <property name="minimumSize">
-         <size>
-          <width>450</width>
-          <height>100</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" rowspan="5" colspan="2">
+      <item row="1" column="0" rowspan="2" colspan="2">
        <widget class="QTableWidget" name="tableWidget">
         <property name="enabled">
          <bool>true</bool>
@@ -112,6 +102,9 @@ section {background-color:#909090;color:#FFFFFF;}</string>
         <attribute name="horizontalHeaderDefaultSectionSize">
          <number>248</number>
         </attribute>
+        <attribute name="horizontalHeaderHighlightSections">
+         <bool>false</bool>
+        </attribute>
         <attribute name="horizontalHeaderMinimumSectionSize">
          <number>45</number>
         </attribute>
@@ -123,6 +116,9 @@ section {background-color:#909090;color:#FFFFFF;}</string>
         </attribute>
         <attribute name="verticalHeaderDefaultSectionSize">
          <number>40</number>
+        </attribute>
+        <attribute name="verticalHeaderHighlightSections">
+         <bool>false</bool>
         </attribute>
         <attribute name="verticalHeaderMinimumSectionSize">
          <number>40</number>
@@ -139,8 +135,74 @@ section {background-color:#909090;color:#FFFFFF;}</string>
         </column>
        </widget>
       </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="pushButton">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>맑은 고딕</family>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>시작</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>맑은 고딕</family>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>삭제</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>맑은 고딕</family>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>저장</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0" colspan="2">
        <widget class="QWidget" name="traffic_light_widget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>500</width>
@@ -258,63 +320,10 @@ min-width: 100px;</string>
         </layout>
        </widget>
       </item>
-      <item row="5" column="2">
-       <widget class="QPushButton" name="pushButton">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>70</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>맑은 고딕</family>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>멈춤</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>70</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>맑은 고딕</family>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>저장</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>70</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>맑은 고딕</family>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>삭제</string>
+      <item row="0" column="2" rowspan="2" colspan="3">
+       <widget class="QTreeView" name="treeView">
+        <property name="lineWidth">
+         <number>1</number>
         </property>
        </widget>
       </item>

@@ -17,10 +17,10 @@ stop_check = False
 
 
 class StandardItem(QStandardItem):
-    def __init__(self, txt='', font_size=12, path='', set_bold=False, color=QColor(0, 0, 0)):
+    def __init__(self, txt="", font_size=12, path="", set_bold=False, color=QColor(0, 0, 0)):
         super().__init__()
 
-        fnt = QFont('나눔스퀘어_ac', font_size)
+        fnt = QFont("나눔스퀘어_ac", font_size)
         fnt.setBold(set_bold)
 
         self.setEditable(False)
@@ -29,10 +29,10 @@ class StandardItem(QStandardItem):
         self.setText(txt)
         if os.path.isdir(path):
             self.setText(txt)
-            self.setIcon(QIcon('image/folder.png'))
+            self.setIcon(QIcon("image/folder.png"))
         else:
             self.setText(txt + ".csv")
-            self.setIcon(QIcon('image/file.png'))
+            self.setIcon(QIcon("image/file.png"))
 
 
 class Thread(QThread):
@@ -42,7 +42,7 @@ class Thread(QThread):
         super().__init__(parent)
         self.parent = parent
         self.date = []
-        f = open('traffic.csv', 'r', encoding='utf-8')
+        f = open("traffic.csv", "r", encoding="utf-8")
         rdr = csv.reader(f)
 
         for line in rdr:
@@ -76,7 +76,7 @@ class WindowClass(QMainWindow, form_class):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("신호등")
-        self.setFont(QFont('나눔스퀘어_ac', 12))
+        self.setFont(QFont("나눔스퀘어_ac", 12))
         self.h1 = Thread(self)
         self.h1.signal.connect(self.change_traffic_light)
         self.h1.start()
@@ -93,17 +93,17 @@ class WindowClass(QMainWindow, form_class):
         global stop_check
         stop_check = False
         data = []
-        # root = 'C:/traffic_data/'
-        root2 = 'C:/traffic_data/' + datetime.today().strftime("%Y-%m-%d") + "/"
+        # root = "C:/traffic_data/"
+        root2 = "C:/traffic_data/" + datetime.today().strftime("%Y-%m-%d") + "/"
         file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
-        extension = '.csv'
+        extension = ".csv"
         path = root2 + file_name + extension
 
         try:
             if not os.path.exists(root2):
                 os.makedirs(root2)
         except OSError:
-            print('이미 파일이 있습니다' + root2)
+            print("이미 파일이 있습니다" + root2)
         self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
         row = self.tableWidget.rowCount()
         for row in range(0, row):
@@ -131,11 +131,11 @@ class WindowClass(QMainWindow, form_class):
 
         treeModel = QStandardItemModel()
         rootNode = treeModel.invisibleRootItem()
-        paths = glob('C:/traffic_data/*')
+        paths = glob("C:/traffic_data/*")
 
         for path in paths:
             folder = StandardItem(Path(path).stem, 16, path)
-            files = glob(path + '/*')
+            files = glob(path + "/*")
             for file in files:
                 f = StandardItem(Path(file).stem, 14, file)
                 folder.appendRow(f)
@@ -146,7 +146,7 @@ class WindowClass(QMainWindow, form_class):
         # self.treeView.doubleClicked.connect(self.new_window)
 
     def button3Function(self):
-        self.treeView.selection()[0]
+        print(self.treeView.selectedRows())
         print("삭제버튼을 눌렀습니다")
 
     @pyqtSlot(str)
@@ -161,7 +161,7 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.item(rowPosition, index).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.tableWidget.scrollToBottom()
 
-        signal_labels = {'RED': self.RED, 'LEFT': self.LEFT, 'YELLOW': self.YELLOW, 'GREEN': self.GREEN}
+        signal_labels = {"RED": self.RED, "LEFT": self.LEFT, "YELLOW": self.YELLOW, "GREEN": self.GREEN}
         signal_lst = [self.RED, self.LEFT, self.YELLOW, self.GREEN]
         for signal in signal_lst:
             signal.setStyleSheet("color: rgb(0, 0, 0);\n"
@@ -170,18 +170,18 @@ class WindowClass(QMainWindow, form_class):
                                  "border-radius: 50px;\n"
                                  "min-height: 100px;\n"
                                  "min-width: 100px;")
-            if inputsignal.__eq__('RED'):
+            if inputsignal.__eq__("RED"):
                 signal_labels[inputsignal].setStyleSheet("background-color: rgb(255, 0, 0);\n"
                                                          "border-radius: 50px;\n"
                                                          "min-height: 100px;\n"
                                                          "min-width: 100px;")
-            if inputsignal.__eq__('YELLOW'):
+            if inputsignal.__eq__("YELLOW"):
                 signal_labels[inputsignal].setStyleSheet("background-color: rgb(255, 255, 0);\n"
                                                          "border-radius: 50px;\n"
                                                          "min-height: 100px;\n"
                                                          "min-width: 100px;")
 
-            if inputsignal.__eq__('LEFT'):
+            if inputsignal.__eq__("LEFT"):
                 signal_labels[inputsignal].setStyleSheet("color: rgb(0, 255, 0);\n"
                                                          "background-color: rgb(0, 0, 0);\n"
                                                          "line-height: 100px;\n"
@@ -191,7 +191,7 @@ class WindowClass(QMainWindow, form_class):
                                                          "min-height: 100px;\n"
                                                          "min-width: 100px;")
 
-            if inputsignal.__eq__('GREEN'):
+            if inputsignal.__eq__("GREEN"):
                 signal_labels[inputsignal].setStyleSheet("background-color: rgb(0, 255, 0);\n"
                                                          "border-radius: 50px;\n"
                                                          "min-height: 100px;\n"

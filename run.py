@@ -11,11 +11,22 @@ from glob import glob
 from pathlib import Path
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
+form_class2 = uic.loadUiType("traffic_ui_sub.ui")[0]
 stop_check = False
 
 
+class subWindow(QMainWindow, form_class2):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.setWindowTitle("신호등")
+        self.setFont(QFont("나눔스퀘어_ac", 12))
+        self.mySub = subWindow()
+        self.mySub.show()
+
+
 class StandardItem(QStandardItem):
-    def __init__(self, txt="", font_size=12, path="", set_bold=False, color=QColor(0, 0, 0)):
+    def __init__(self, txt="", font_size=14, path="", set_bold=False, color=QColor(0, 0, 0)):
         super().__init__()
 
         fnt = QFont("나눔스퀘어_ac", font_size)
@@ -31,6 +42,7 @@ class StandardItem(QStandardItem):
         else:
             self.setText(txt + ".csv")
             self.setIcon(QIcon("image/file.png"))
+            self.setCheckable(True)
 
 
 class Thread(QThread):
@@ -39,33 +51,31 @@ class Thread(QThread):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        self.date = []
+        self.data = []
         f = open("traffic.csv", "r", encoding="utf-8")
         rdr = csv.reader(f)
-
         for line in rdr:
-            self.date.extend([line[0]])  # 인풋 방식 모름
-            # self.date.extend([line[1]])
+            self.data.extend([line])  # 인풋 방식 모름
         f.close()
 
     def run(self):
         global stop_check
         while True:
-            for signal in self.date:
-                sleep(1)
+            for (a, b) in self.data:
                 if stop_check:
-                    self.signal.emit(signal)
+                    self.signal.emit(a)
+                sleep(int(b))
 
     def stop(self):
         global stop_check
         if stop_check:
             stop_check = False
-            self.parent.pushButton.setText("실행")
-            self.parent.pushButton.repaint()
+            self.parent.start_button.setText("실행")
+            self.parent.start_button.repaint()
         else:
             stop_check = True
-            self.parent.pushButton.setText("멈춤")
-            self.parent.pushButton.repaint()
+            self.parent.start_button.setText("멈춤")
+            self.parent.start_button.repaint()
         print("멈춤버튼을 눌렀습니다")
 
 
@@ -78,16 +88,16 @@ class WindowClass(QMainWindow, form_class):
         self.h1 = Thread(self)
         self.h1.signal.connect(self.change_traffic_light)
         self.h1.start()
-        self.pushButton.clicked.connect(self.button1Function)
-        self.pushButton_2.clicked.connect(self.button2Function)
-        self.pushButton_3.clicked.connect(self.button3Function)
+        self.start_button.clicked.connect(self.start_function)
+        self.save_button.clicked.connect(self.save_function)
+        self.delete_button.clicked.connect(self.delete_function)
         self.set_tree_view()
         # self.treeView.setIndentation(0)
 
-    def button1Function(self):
+    def start_function(self):
         self.h1.stop()
 
-    def button2Function(self):
+    def save_function(self):
         buttonReply = QMessageBox.information(
             self, '저장', "정말로 저장 하시겠습니까?",
             QMessageBox.Yes | QMessageBox.No
@@ -106,6 +116,7 @@ class WindowClass(QMainWindow, form_class):
                     os.makedirs(root)
             except OSError:
                 print("이미 파일이 있습니다" + root)
+
             self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
             row = self.tableWidget.rowCount()
             for row in range(0, row):
@@ -122,21 +133,27 @@ class WindowClass(QMainWindow, form_class):
             self.set_tree_view()
             print("저장버튼을 눌렀습니다")
             self.tableWidget.setRowCount(0)
-            self.pushButton.setText("실행")
-            self.pushButton.repaint()
         else:
             print('No clicked.')
 
-
-    def new_window(self, value):
-        if not os.path.isdir('frames/' + value.data()):
-            self.dialog = CSVWINDOW(value)
-            self.dialog.show()
+    def delete_function(self):
+        root = "C:/traffic_data/"
+        index = self.treeView.selectedIndexes()[0]
+        if index is None:
+            pass
+        else:
+            file = index.model().itemFromIndex(index).text()
+            folder = file.split()[0] + "/"
+            root2 = root + folder + file
+            if os.path.isfile(root2):
+                os.remove(root2)
+            self.set_tree_view()
+            print("삭제버튼을 눌렀습니다")
 
     def set_tree_view(self):
         self.treeView.setHeaderHidden(True)
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.treeWidget.customContextMenuRequested.connect(self.openMenu)
+        # self.treeWidget.customContextMenuRequested.connect(self.openMenu)
 
         treeModel = QStandardItemModel()
         rootNode = treeModel.invisibleRootItem()
@@ -154,16 +171,22 @@ class WindowClass(QMainWindow, form_class):
         self.treeView.collapseAll()
         self.treeView.doubleClicked.connect(self.new_window)
 
-    def button3Function(self):
-        print(self.treeView)
-        print("삭제버튼을 눌렀습니다")
+    def new_window(self):
+        root = "C:/traffic_data/"
+        index = self.treeView.selectedIndexes()[0]
+        file = index.model().itemFromIndex(index).text()
+        folder = file.split()[0] + "/"
+        print(root + folder + file)
+        if os.path.isfile(root + folder + file):
+            subWindow().show()
 
     @pyqtSlot(str)
-    def change_traffic_light(self, inputS):
+    def change_traffic_light(self, signal_data):
+        print(signal_data)
 
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.insertRow(rowPosition)
-        lists = [QTableWidgetItem(inputS), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
+        lists = [QTableWidgetItem(signal_data), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)
@@ -179,32 +202,32 @@ class WindowClass(QMainWindow, form_class):
                                  "border-radius: 50px;\n"
                                  "min-height: 100px;\n"
                                  "min-width: 100px;")
-            if inputS.__eq__("RED"):
-                signal_labels[inputS].setStyleSheet("background-color: rgb(255, 0, 0);\n"
-                                                    "border-radius: 50px;\n"
-                                                    "min-height: 100px;\n"
-                                                    "min-width: 100px;")
-            if inputS.__eq__("YELLOW"):
-                signal_labels[inputS].setStyleSheet("background-color: rgb(255, 255, 0);\n"
-                                                    "border-radius: 50px;\n"
-                                                    "min-height: 100px;\n"
-                                                    "min-width: 100px;")
+            if signal_data.__eq__("RED"):
+                signal_labels[signal_data].setStyleSheet("background-color: rgb(255, 0, 0);\n"
+                                                         "border-radius: 50px;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
+            if signal_data.__eq__("YELLOW"):
+                signal_labels[signal_data].setStyleSheet("background-color: rgb(255, 255, 0);\n"
+                                                         "border-radius: 50px;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
 
-            if inputS.__eq__("LEFT"):
-                signal_labels[inputS].setStyleSheet("color: rgb(0, 255, 0);\n"
-                                                    "background-color: rgb(0, 0, 0);\n"
-                                                    "line-height: 100px;\n"
-                                                    "border-radius: 50px;\n"
-                                                    "border: 5px solid rgb(0, 255, 0);\n"
-                                                    "box-sizing: border-box;\n"
-                                                    "min-height: 100px;\n"
-                                                    "min-width: 100px;")
+            if signal_data.__eq__("LEFT"):
+                signal_labels[signal_data].setStyleSheet("color: rgb(0, 255, 0);\n"
+                                                         "background-color: rgb(0, 0, 0);\n"
+                                                         "line-height: 100px;\n"
+                                                         "border-radius: 50px;\n"
+                                                         "border: 5px solid rgb(0, 255, 0);\n"
+                                                         "box-sizing: border-box;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
 
-            if inputS.__eq__("GREEN"):
-                signal_labels[inputS].setStyleSheet("background-color: rgb(0, 255, 0);\n"
-                                                    "border-radius: 50px;\n"
-                                                    "min-height: 100px;\n"
-                                                    "min-width: 100px;")
+            if signal_data.__eq__("GREEN"):
+                signal_labels[signal_data].setStyleSheet("background-color: rgb(0, 255, 0);\n"
+                                                         "border-radius: 50px;\n"
+                                                         "min-height: 100px;\n"
+                                                         "min-width: 100px;")
 
 
 if __name__ == "__main__":

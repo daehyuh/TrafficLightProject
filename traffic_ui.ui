@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>979</width>
+    <width>1029</width>
     <height>704</height>
    </rect>
   </property>
@@ -136,10 +136,22 @@ section {background-color:#909090;color:#FFFFFF;}</string>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="start_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
           <height>70</height>
          </size>
         </property>
@@ -156,10 +168,22 @@ section {background-color:#909090;color:#FFFFFF;}</string>
        </widget>
       </item>
       <item row="2" column="4">
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="delete_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
           <height>70</height>
          </size>
         </property>
@@ -176,10 +200,22 @@ section {background-color:#909090;color:#FFFFFF;}</string>
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="save_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>100</width>
+          <height>70</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>160</width>
           <height>70</height>
          </size>
         </property>
@@ -192,6 +228,25 @@ section {background-color:#909090;color:#FFFFFF;}</string>
         </property>
         <property name="text">
          <string>저장</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2" colspan="3">
+       <widget class="QTreeView" name="treeView">
+        <property name="minimumSize">
+         <size>
+          <width>500</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1000</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="lineWidth">
+         <number>1</number>
         </property>
        </widget>
       </item>
@@ -320,10 +375,10 @@ min-width: 100px;</string>
         </layout>
        </widget>
       </item>
-      <item row="0" column="2" rowspan="2" colspan="3">
-       <widget class="QTreeView" name="treeView">
-        <property name="lineWidth">
-         <number>1</number>
+      <item row="0" column="2" colspan="3">
+       <widget class="QPlainTextEdit" name="plainTextEdit">
+        <property name="enabled">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

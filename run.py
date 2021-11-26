@@ -1,5 +1,7 @@
 import sys
 from builtins import print, len
+from webbrowser import get
+
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QColor, QIcon
@@ -10,10 +12,26 @@ import csv
 import os
 from glob import glob
 from pathlib import Path
+import requests
+import pandas as pd
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
-
 stop_check = False
+
+
+def get_hex():
+    target_url = "http://49.50.163.17:8933/get_hex"
+    response = requests.post(target_url)
+    return response.text
+
+
+def hex_to_step():
+    step = get_hex()[14:15]
+    return step
+
+
+def get_int_step():
+    return int(get_hex()[14])
 
 
 class StandardItem(QStandardItem):
@@ -33,11 +51,10 @@ class StandardItem(QStandardItem):
         else:
             self.setText(txt + ".csv")
             self.setIcon(QIcon("image/file.ico"))
-            # self.setCheckable(True)
 
 
 class Thread(QThread):
-    signal = pyqtSignal(list)
+    signal = pyqtSignal(dict)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -50,15 +67,28 @@ class Thread(QThread):
             self.data.extend([line])  # 인풋 방식 모름
             self.sum.append(self.data[idx][:-1])
         f.close()
+        self.inform_dict = {"RED": 0, "YELLOW": 0, "GREEN": 0, "LEFT": 0}
+        self.nowtime = get_int_step()
 
     def run(self):
         global stop_check
         while True:
-            for idx, val in enumerate(self.sum):
-                if stop_check:
-                    self.signal.emit(val)
-                # WindowClass.log(self, str(val) + str(self.data[idx][-1]))
-                sleep(int(self.data[idx][-1]))
+            if stop_check:
+                if self.nowtime != get_int_step():
+                    df2 = pd.read_csv("test.csv")
+                    inform_by_step = df2[df2['STEP'] == int(get_int_step())]
+                    prevdict = self.inform_dict.copy()
+                    print(int(get_int_step()), self.inform_dict, inform_by_step)
+                    for k in self.inform_dict.keys():
+                        if k in inform_by_step:
+                            self.inform_dict[k] = int(inform_by_step[k])
+                    # print("a", int(get_int_step()), self.inform_dict)
+                    if prevdict is not self.inform_dict:
+                        print(prevdict)
+
+                    self.signal.emit(prevdict)
+                    self.nowtime = get_int_step()
+                sleep(1)
 
 
 class WindowClass(QMainWindow, form_class):
@@ -76,11 +106,9 @@ class WindowClass(QMainWindow, form_class):
         self.event_log.setWindowTitle("신호등")
         self.event_log.setFont(QFont("나눔스퀘어_ac", 12))
         self.set_tree_view()
-        # self.treeView.setIndentation(0)
 
     def log(self, record):
-        self.event_log.append(datetime.today().strftime("[%Y-%m-%d %H-%M-%S] \n" + record)+"\n")
-        # self.event_log.
+        self.event_log.append(datetime.today().strftime("[%Y-%m-%d %H-%M-%S] \n" + record) + "\n")
 
     def stop(self):
         global stop_check
@@ -190,7 +218,7 @@ class WindowClass(QMainWindow, form_class):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
-    @pyqtSlot(list)
+    @pyqtSlot(dict)
     def change_traffic_light(self, signals):
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.insertRow(rowPosition)
@@ -200,8 +228,7 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)
             self.tableWidget.item(rowPosition, index).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.tableWidget.scrollToBottom()
-        # self.event_log.scrollToBottom()
-        signal_labels = {"RED": self.RED, "LEFT": self.LEFT, "YELLOW": self.YELLOW, "GREEN": self.GREEN}
+
         self_signal__lst = [self.RED, self.LEFT, self.YELLOW, self.GREEN]
         for self_signal in self_signal__lst:
             self_signal.setStyleSheet("color: rgb(0, 0, 0);\n"
@@ -211,31 +238,33 @@ class WindowClass(QMainWindow, form_class):
                                       "min-height: 100px;\n"
                                       "min-width: 100px;")
 
-            for signal in signals:
-                if signal.__eq__("RED"):
-                    signal_labels[signal].setStyleSheet("background-color: rgb(255, 0, 0);\n"
-                                                        "border-radius: 50px;\n"
-                                                        "min-height: 100px;\n"
-                                                        "min-width: 100px;")
-                if signal.__eq__("YELLOW"):
-                    signal_labels[signal].setStyleSheet("background-color: rgb(255, 255, 0);\n"
-                                                        "border-radius: 50px;\n"
-                                                        "min-height: 100px;\n"
-                                                        "min-width: 100px;")
+        for key, value in signals.items():
+            print(type(key), type(value))
+            if value == 1:
+                if key.__eq__("RED"):
+                    self.RED.setStyleSheet("background-color: rgb(255, 0, 0);\n"
+                                           "border-radius: 50px;\n"
+                                           "min-height: 100px;\n"
+                                           "min-width: 100px;")
+                if key.__eq__("YELLOW"):
+                    self.YELLOW.setStyleSheet("background-color: rgb(255, 255, 0);\n"
+                                              "border-radius: 50px;\n"
+                                              "min-height: 100px;\n"
+                                              "min-width: 100px;")
 
-                if signal.__eq__("LEFT"):
-                    signal_labels[signal].setStyleSheet("color: rgb(0, 255, 0);\n"
-                                                        "background-color: rgb(0, 0, 0);\n"
-                                                        "line-height: 50px;\n"
-                                                        "border-radius: 50px;\n"
-                                                        "border: 5px solid rgb(0, 255, 0);\n"
-                                                        "min-height: 100px;\n"
-                                                        "min-width: 100px;")
-                if signal.__eq__("GREEN"):
-                    signal_labels[signal].setStyleSheet("background-color: rgb(0, 255, 0);\n"
-                                                        "border-radius: 50px;\n"
-                                                        "min-height: 100px;\n"
-                                                        "min-width: 100px;")
+                if key.__eq__("LEFT"):
+                    self.LEFT.setStyleSheet("color: rgb(0, 255, 0);\n"
+                                            "background-color: rgb(0, 0, 0);\n"
+                                            "line-height: 50px;\n"
+                                            "border-radius: 50px;\n"
+                                            "border: 5px solid rgb(0, 255, 0);\n"
+                                            "min-height: 100px;\n"
+                                            "min-width: 100px;")
+                if key.__eq__("GREEN"):
+                    self.GREEN.setStyleSheet("background-color: rgb(0, 255, 0);\n"
+                                             "border-radius: 50px;\n"
+                                             "min-height: 100px;\n"
+                                             "min-width: 100px;")
 
 
 if __name__ == "__main__":

@@ -57,19 +57,8 @@ class Thread(QThread):
             for idx, val in enumerate(self.sum):
                 if stop_check:
                     self.signal.emit(val)
+                # WindowClass.log(self, str(val) + str(self.data[idx][-1]))
                 sleep(int(self.data[idx][-1]))
-
-    def stop(self):
-        global stop_check
-        if stop_check:
-            stop_check = False
-            self.parent.start_button.setText("실행")
-            self.parent.start_button.repaint()
-        else:
-            stop_check = True
-            self.parent.start_button.setText("멈춤")
-            self.parent.start_button.repaint()
-        print("멈춤버튼을 눌렀습니다")
 
 
 class WindowClass(QMainWindow, form_class):
@@ -84,19 +73,42 @@ class WindowClass(QMainWindow, form_class):
         self.start_button.clicked.connect(self.start_function)
         self.save_button.clicked.connect(self.save_function)
         self.delete_button.clicked.connect(self.delete_function)
+        self.event_log.setWindowTitle("신호등")
+        self.event_log.setFont(QFont("나눔스퀘어_ac", 12))
         self.set_tree_view()
         # self.treeView.setIndentation(0)
 
+    def log(self, record):
+        self.event_log.append(datetime.today().strftime("[%Y-%m-%d %H-%M-%S] \n" + record)+"\n")
+        # self.event_log.
+
+    def stop(self):
+        global stop_check
+        if stop_check:
+            stop_check = False
+            self.start_button.setText("실행")
+            self.start_button.repaint()
+            self.log("정지")
+        else:
+            stop_check = True
+            self.start_button.setText("정지")
+            self.start_button.repaint()
+            self.log("실행")
+
     def start_function(self):
-        self.h1.stop()
+        self.stop()
 
     def save_function(self):
+        global stop_check
+
         buttonReply = QMessageBox.information(
             self, '저장', "정말로 저장 하시겠습니까?",
             QMessageBox.Yes | QMessageBox.No
         )
         if buttonReply == QMessageBox.Yes:
-            self.h1.stop()
+            stop_check = False
+            self.start_button.setText("실행")
+            self.start_button.repaint()
             data = []
             root = "C:/traffic_data/" + datetime.today().strftime("%Y-%m-%d") + "/"
             file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
@@ -123,20 +135,21 @@ class WindowClass(QMainWindow, form_class):
                 file.close()
 
             self.set_tree_view()
-            print("저장버튼을 눌렀습니다")
+            self.log("정지\n데이터가 저장되었습니다\n테이블을 초기화합니다")
             self.tableWidget.setRowCount(0)
         else:
-            print('No clicked.')
+            pass
 
     def delete_function(self):
-        root = self.check_sel_root()
-        if os.path.isfile(root):
-            os.remove(root)
-            self.set_tree_view()
-        print("삭제버튼을 눌렀습니다")
+        if len(self.treeView.selectedIndexes()) == 1:
+            root = self.check_sel_root()
+            if os.path.isfile(root):
+                os.remove(root)
+                self.set_tree_view()
+                self.log(root + "\n파일을 삭제했습니다")
 
     def check_sel_root(self):
-        print(len(self.treeView.selectedIndexes()))
+        print()
         if len(self.treeView.selectedIndexes()) != 0:
             index = self.treeView.selectedIndexes()[0]
             print(index.data())
@@ -148,7 +161,6 @@ class WindowClass(QMainWindow, form_class):
     def set_tree_view(self):
         self.treeView.setHeaderHidden(True)
         self.treeView.setContextMenuPolicy(Qt.CustomContextMenu)
-        # self.treeWidget.customContextMenuRequested.connect(self.openMenu)
 
         treeModel = QStandardItemModel()
         rootNode = treeModel.invisibleRootItem()
@@ -170,8 +182,9 @@ class WindowClass(QMainWindow, form_class):
         if len(self.treeView.selectedIndexes()) != 0:
             root = self.check_sel_root()
             if os.path.isfile(root):
-                print("Dd")
+                print("뷰어 클릭")
                 os.popen(root)
+                self.log(root + "\n파일을 열었습니다")
 
     def resizeEvent(self, event):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
@@ -187,7 +200,7 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)
             self.tableWidget.item(rowPosition, index).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.tableWidget.scrollToBottom()
-
+        # self.event_log.scrollToBottom()
         signal_labels = {"RED": self.RED, "LEFT": self.LEFT, "YELLOW": self.YELLOW, "GREEN": self.GREEN}
         self_signal__lst = [self.RED, self.LEFT, self.YELLOW, self.GREEN]
         for self_signal in self_signal__lst:
@@ -213,10 +226,9 @@ class WindowClass(QMainWindow, form_class):
                 if signal.__eq__("LEFT"):
                     signal_labels[signal].setStyleSheet("color: rgb(0, 255, 0);\n"
                                                         "background-color: rgb(0, 0, 0);\n"
-                                                        "line-height: 100px;\n"
+                                                        "line-height: 50px;\n"
                                                         "border-radius: 50px;\n"
                                                         "border: 5px solid rgb(0, 255, 0);\n"
-                                                        "box-sizing: border-box;\n"
                                                         "min-height: 100px;\n"
                                                         "min-width: 100px;")
                 if signal.__eq__("GREEN"):

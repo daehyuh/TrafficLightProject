@@ -75,7 +75,7 @@ class Thread(QThread):
         while True:
             if stop_check:
                 if self.nowtime != get_int_step():
-                    df2 = pd.read_csv("test.csv")
+                    df2 = pd.read_csv("traffic.csv.csv")
                     inform_by_step = df2[df2['STEP'] == int(get_int_step())]
                     prevdict = self.inform_dict.copy()
                     print(int(get_int_step()), self.inform_dict, inform_by_step)

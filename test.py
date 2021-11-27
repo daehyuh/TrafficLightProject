@@ -1,12 +1,10 @@
 import pandas as pd
 
 import requests
-import time
-from time import sleep
 
 
 def get_hex():
-    target_url = "http://49.50.163.17:8933/get_hex"
+    target_url = "http://localhost/get_hex"
 
     response = requests.post(target_url)
 

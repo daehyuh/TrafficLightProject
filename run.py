@@ -19,8 +19,9 @@ stop_check = False
 
 
 def get_hex():
-    target_url = "http://localhost/get_hex"
+    target_url = "http://localhost:8933/get_hex" #API주소 16진수 데이터
     response = requests.post(target_url)
+    print(type(response.text))
     return response.text
 
 
@@ -66,7 +67,7 @@ class Thread(QThread):
             self.data.extend([line])  # 인풋 방식 모름
             self.sum.append(self.data[idx][:-1])
         f.close()
-        self.inform_dict = {"RED": 0, "YELLOW": 0, "GREEN": 0, "LEFT": 0}
+        self.inform_dict = {"RED": 0, "YELLOW": 0, "LEFT": 0, "GREEN": 0}
         self.PREVIOUS = self.inform_dict.copy()
         self.CURRENT_TIME = get_int_step()
         self.checkSignal()
@@ -221,6 +222,11 @@ class WindowClass(QMainWindow, form_class):
     def resizeEvent(self, event):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        # self.start_button.resize(self.mainWindow.sizeHint())
+        print("전체", self.centralwidget.width())
+        print("테이블", self.tableWidget.width())
+
+
 
     def closeEvent(self, event):
         self.save_function()
@@ -233,7 +239,7 @@ class WindowClass(QMainWindow, form_class):
         for key, value in signals.items():
             if value == 1:
                 activeData += key + " "
-        self.log(activeData + "데이터를 받았습니다")
+        self.log(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝")
         self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
         lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
         for index, row in enumerate(lists):
@@ -242,7 +248,7 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.item(rowPosition, index).setTextAlignment(Qt.AlignCenter | Qt.AlignVCenter)
         self.tableWidget.scrollToBottom()
 
-        self_signal__lst = [self.RED, self.LEFT, self.YELLOW, self.GREEN]
+        self_signal__lst = [self.RED, self.YELLOW, self.LEFT, self.GREEN]
         for self_signal in self_signal__lst:
             self_signal.setStyleSheet("color: rgb(0, 0, 0);\n"
                                       "background-color: rgb(0, 0, 0);\n"

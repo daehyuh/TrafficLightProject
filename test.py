@@ -4,7 +4,7 @@ import requests
 
 
 def get_hex():
-    target_url = "http://localhost/get_hex"
+    target_url = "http://localhost:8933/get_hex" #API주소 16진수 데이터
 
     response = requests.post(target_url)
 

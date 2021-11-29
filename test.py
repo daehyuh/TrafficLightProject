@@ -34,34 +34,36 @@ def get_int_time():
 def get_int_step():
     return int(get_hex()[14], 16)
 
-
-df = pd.DataFrame(
-    {'STEP': [0, 1, 2, 3, 4, 5, 6, 7], 'RED': [1, 1, 1, 1, 1, 1, 1, 1], 'YELLOW': [0, 0, 0, 1, 0, 0, 0, 0],
-     'LEFT': [1, 1, 1, 0, 0, 0, 0, 0], 'GREEN': [0, 0, 0, 0, 0, 0, 0, 0]})
-df = df.set_index('STEP')
-df.to_csv("test.csv")
-
-df2 = pd.read_csv("test.csv")
-print(df2)
-
-hex_data = get_hex()
-step = hex_to_step(hex_data)
-print(step)
-
-inform_dict = {"RED": 0, "YELLOW": 0, "LEFT": 0, "GREEN": 0}
-inform_by_step = df2[df2['STEP'] == int(step)]
+print(get_int_time())
 
 
-keys = inform_dict.keys()
-print(keys)
-
-for k in inform_dict.keys():
-    if k in inform_by_step:
-        inform_dict[k] = int(inform_by_step[k])
-
-print(inform_dict)
-
-print(inform_by_step)
+# df = pd.DataFrame(
+#     {'STEP': [0, 1, 2, 3, 4, 5, 6, 7], 'RED': [1, 1, 1, 1, 1, 1, 1, 1], 'YELLOW': [0, 0, 0, 1, 0, 0, 0, 0],
+#      'LEFT': [1, 1, 1, 0, 0, 0, 0, 0], 'GREEN': [0, 0, 0, 0, 0, 0, 0, 0]})
+# df = df.set_index('STEP')
+# df.to_csv("test.csv")
+#
+# df2 = pd.read_csv("test.csv")
+# print(df2)
+#
+# hex_data = get_hex()
+# step = hex_to_step(hex_data)
+# print(step)
+#
+# inform_dict = {"RED": 0, "YELLOW": 0, "LEFT": 0, "GREEN": 0}
+# inform_by_step = df2[df2['STEP'] == int(step)]
+#
+#
+# keys = inform_dict.keys()
+# print(keys)
+#
+# for k in inform_dict.keys():
+#     if k in inform_by_step:
+#         inform_dict[k] = int(inform_by_step[k])
+#
+# print(inform_dict)
+#
+# print(inform_by_step)
 
 
 

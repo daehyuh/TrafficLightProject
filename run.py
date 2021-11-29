@@ -68,27 +68,32 @@ class Thread(QThread):
             self.sum.append(self.data[idx][:-1])
         f.close()
         self.inform_dict = {"RED": 0, "YELLOW": 0, "GREEN": 0, "LEFT": 0}
-        self.nowtime = get_int_step()
+        self.PREVIOUS = self.inform_dict.copy()
+        self.CURRENT_TIME = get_int_step()
+        self.checkSignal()
+
+    def checkSignal(self):
+        df2 = pd.read_csv("traffic.csv")
+        inform_by_step = df2[df2['STEP'] == int(get_int_step())]
+        self.PREVIOUS = self.inform_dict.copy()
+        print(int(get_int_step()), self.inform_dict, inform_by_step)
+        for k in self.inform_dict.keys():
+            if k in inform_by_step:
+                self.inform_dict[k] = int(inform_by_step[k])
 
     def run(self):
         global stop_check
         while True:
             if stop_check:
-                if self.nowtime != get_int_step():
-                    df2 = pd.read_csv("traffic.csv")
-                    inform_by_step = df2[df2['STEP'] == int(get_int_step())]
-                    prevdict = self.inform_dict.copy()
-                    print(int(get_int_step()), self.inform_dict, inform_by_step)
-                    for k in self.inform_dict.keys():
-                        if k in inform_by_step:
-                            self.inform_dict[k] = int(inform_by_step[k])
+                if self.CURRENT_TIME != get_int_step():
+                    self.checkSignal()
                     # print("a", int(get_int_step()), self.inform_dict)
-                    if prevdict is not self.inform_dict:
-                        print(prevdict)
+                    if self.PREVIOUS is not self.inform_dict:
+                        print(self.PREVIOUS)
 
-                    self.signal.emit(prevdict)
-                    self.nowtime = get_int_step()
-                sleep(1)
+                    self.signal.emit(self.PREVIOUS)
+                    self.CURRENT_TIME = get_int_step()
+                sleep(0.1)
 
 
 class WindowClass(QMainWindow, form_class):
@@ -108,7 +113,7 @@ class WindowClass(QMainWindow, form_class):
         self.set_tree_view()
 
     def log(self, record):
-        self.event_log.append(datetime.today().strftime("[%Y-%m-%d %H-%M-%S] \n" + record) + "\n")
+        self.event_log.append(datetime.today().strftime("[%Y-%m-%d %H-%M-%S] \n" + record))
 
     def stop(self):
         global stop_check
@@ -218,11 +223,20 @@ class WindowClass(QMainWindow, form_class):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
+    def closeEvent(self, event):
+        self.save_function()
+
     @pyqtSlot(dict)
     def change_traffic_light(self, signals):
         rowPosition = self.tableWidget.rowCount()
         self.tableWidget.insertRow(rowPosition)
-        lists = [QTableWidgetItem(str(signals)), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
+        activeData = ""
+        for key, value in signals.items():
+            if value == 1:
+                activeData += key + " "
+        self.log(activeData + "데이터를 받았습니다")
+        self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
+        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)

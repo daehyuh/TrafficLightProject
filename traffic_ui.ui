@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1111</width>
+    <width>1152</width>
     <height>818</height>
    </rect>
   </property>
@@ -106,7 +106,7 @@ section {background-color:#909090;color:#FFFFFF;}</string>
          <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>223</number>
+         <number>227</number>
         </attribute>
         <attribute name="horizontalHeaderHighlightSections">
          <bool>false</bool>

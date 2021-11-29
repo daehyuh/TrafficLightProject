@@ -1,26 +1,25 @@
+import csv
+import os
 import sys
 from builtins import print, len
-from webbrowser import get
+from datetime import datetime
+from glob import glob
+from pathlib import Path
+from time import sleep
 
+import pandas as pd
+import requests as requests
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QColor, QIcon
 from PyQt5.QtWidgets import *
-from datetime import datetime
-from time import sleep
-import csv
-import os
-from glob import glob
-from pathlib import Path
-import requests
-import pandas as pd
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
 stop_check = False
 
 
 def get_hex():
-    target_url = "http://49.50.163.17:8933/get_hex"
+    target_url = "http://localhost/get_hex"
     response = requests.post(target_url)
     return response.text
 

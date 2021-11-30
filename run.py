@@ -67,9 +67,10 @@ def get_hex():
     ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve')
     with open("signal_recieve", "r") as f2:
         item = f2.readline()
-        print("\r\r\r\r ------,", item)
+        # print("\r\r\r\r ------,", item)
     f2.close()
-
+    print(item)
+    print(item[13])
     return item
 
 
@@ -125,7 +126,7 @@ class Thread(QThread):
         df2 = pd.read_csv("traffic.csv")
         inform_by_step = df2[df2['STEP'] == int(get_int_step())]
         self.PREVIOUS = self.inform_dict.copy()
-        print(int(get_int_step()), self.inform_dict, inform_by_step)
+        # print(int(get_int_step()), self.inform_dict, inform_by_step)
         for k in self.inform_dict.keys():
             if k in inform_by_step:
                 self.inform_dict[k] = int(inform_by_step[k])
@@ -134,6 +135,7 @@ class Thread(QThread):
         global stop_check
         while True:
             if stop_check:
+                print(self.CURRENT_TIME, get_int_step())
                 if self.CURRENT_TIME != get_int_step():
                     self.checkSignal()
                     if self.PREVIOUS is not self.inform_dict:
@@ -230,7 +232,6 @@ class WindowClass(QMainWindow, form_class):
                 self.log(root + "\n파일을 삭제했습니다")
 
     def check_sel_root(self):
-        print()
         if len(self.treeView.selectedIndexes()) != 0:
             index = self.treeView.selectedIndexes()[0]
             print(index.data())
@@ -286,7 +287,7 @@ class WindowClass(QMainWindow, form_class):
         for key, value in signals.items():
             if value == 1:
                 activeData += key + " "
-        self.log(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝")
+        self.log(str(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝"))
         self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
         lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")), QTableWidgetItem(str(get_int_step())+" 스텝")]
         for index, row in enumerate(lists):

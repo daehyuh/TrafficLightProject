@@ -1,5 +1,4 @@
 import csv
-import os
 import sys
 from builtins import print, len
 from datetime import datetime
@@ -8,21 +7,70 @@ from pathlib import Path
 from time import sleep
 
 import pandas as pd
-import requests as requests
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QColor, QIcon
 from PyQt5.QtWidgets import *
+import paramiko
+from scp import SCPClient, SCPException
+
+
+class SSHManager:
+    def __init__(self):
+        self.ssh_client = None
+
+    def create_ssh_client(self, hostname, username, password):
+        """Create SSH client session to remote server"""
+        if self.ssh_client is None:
+            self.ssh_client = paramiko.SSHClient()
+            self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.ssh_client.connect(hostname, username=username, password=password)
+        else:
+            print("SSH client session exist.")
+
+    def close_ssh_client(self):
+        """Close SSH client session"""
+        self.ssh_client.close()
+
+    def send_file(self, local_path, remote_path):
+        """Send a single file to remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.put(local_path, remote_path, preserve_times=True)
+        except SCPException:
+            raise SCPException.message
+
+    def get_file(self, remote_path, local_path):
+        """Get a single file from remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.get(remote_path, local_path)
+        except SCPException:
+            raise SCPException.message
+
+    def send_command(self, command):
+        """Send a single command"""
+        stdin, stdout, stderr = self.ssh_client.exec_command(command)
+        return stdout.readlines()
+
+
+ssh_manager2 = SSHManager()  ##수신
+ssh_manager2.create_ssh_client("192.168.1.6", "user", "user")
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
 stop_check = False
 
+import os
+
 
 def get_hex():
-    target_url = "http://49.50.163.17:8933/get_hex" #API주소 16진수 데이터
-    response = requests.post(target_url)
-    print(type(response.text))
-    return response.text
+    ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve')
+    with open("signal_recieve", "r") as f2:
+        item = f2.readline()
+        print("\r\r\r\r ------,", item)
+    f2.close()
+
+    return item
 
 
 def hex_to_step():
@@ -31,7 +79,8 @@ def hex_to_step():
 
 
 def get_int_step():
-    return int(get_hex()[14])
+    print(int(get_hex()[13]))
+    return int(get_hex()[13])
 
 
 class StandardItem(QStandardItem):
@@ -87,7 +136,6 @@ class Thread(QThread):
             if stop_check:
                 if self.CURRENT_TIME != get_int_step():
                     self.checkSignal()
-                    # print("a", int(get_int_step()), self.inform_dict)
                     if self.PREVIOUS is not self.inform_dict:
                         print(self.PREVIOUS)
 
@@ -157,7 +205,7 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
             row = self.tableWidget.rowCount()
             for row in range(0, row):
-                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]], self.tableWidget.item(row, 2).text()])
+                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text(), self.tableWidget.item(row, 2).text()]])
             print(data)
             if len(data) != 0:
                 file = open(path, "w", newline="")
@@ -227,8 +275,6 @@ class WindowClass(QMainWindow, form_class):
         print("전체", self.centralwidget.width())
         print("테이블", self.tableWidget.width())
 
-
-
     def closeEvent(self, event):
         self.save_function()
 
@@ -240,9 +286,9 @@ class WindowClass(QMainWindow, form_class):
         for key, value in signals.items():
             if value == 1:
                 activeData += key + " "
-        self.log(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + " 스텝")
+        self.log(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝")
         self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
-        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")), QTableWidgetItem(str(get_int_step())+" STEP")]
+        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")), QTableWidgetItem(str(get_int_step())+" 스텝")]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)

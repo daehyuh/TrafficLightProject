@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1554</width>
+    <width>1347</width>
     <height>879</height>
    </rect>
   </property>
@@ -70,13 +70,13 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>700</width>
+          <width>600</width>
           <height>500</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>850</width>
+          <width>600</width>
           <height>16777215</height>
          </size>
         </property>
@@ -106,7 +106,7 @@ section {background-color:#909090;color:#FFFFFF;}</string>
          <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>248</number>
+         <number>200</number>
         </attribute>
         <attribute name="horizontalHeaderHighlightSections">
          <bool>false</bool>
@@ -139,25 +139,30 @@ section {background-color:#909090;color:#FFFFFF;}</string>
           <string>TIME</string>
          </property>
         </column>
+        <column>
+         <property name="text">
+          <string>STEP</string>
+         </property>
+        </column>
        </widget>
       </item>
       <item row="0" column="0" colspan="2">
        <widget class="QWidget" name="traffic_light_widget" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>700</width>
+          <width>600</width>
           <height>200</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>850</width>
+          <width>600</width>
           <height>16777215</height>
          </size>
         </property>
@@ -266,43 +271,30 @@ min-width: 100px;</string>
         </layout>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QPushButton" name="delete_button">
+      <item row="0" column="2" colspan="2">
+       <widget class="QTextEdit" name="event_log">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>0</width>
-          <height>100</height>
+          <width>700</width>
+          <height>200</height>
          </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>맑은 고딕</family>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>삭제</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="2" colspan="2">
+      <item row="1" column="2" rowspan="2" colspan="2">
        <widget class="QTreeView" name="treeView">
         <property name="minimumSize">
          <size>
-          <width>800</width>
+          <width>700</width>
           <height>0</height>
          </size>
         </property>
@@ -317,7 +309,39 @@ min-width: 100px;</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="3">
+      <item row="3" column="0" colspan="2">
+       <widget class="QPushButton" name="start_button">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>600</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>600</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>맑은 고딕</family>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>시작</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
        <widget class="QPushButton" name="save_button">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -349,21 +373,8 @@ min-width: 100px;</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="2" colspan="2">
-       <widget class="QTextEdit" name="event_log">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>800</width>
-          <height>200</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QPushButton" name="start_button">
+      <item row="3" column="3">
+       <widget class="QPushButton" name="delete_button">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
@@ -372,13 +383,13 @@ min-width: 100px;</string>
         </property>
         <property name="minimumSize">
          <size>
-          <width>700</width>
+          <width>0</width>
           <height>100</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>850</width>
+          <width>16777215</width>
           <height>100</height>
          </size>
         </property>
@@ -390,7 +401,7 @@ min-width: 100px;</string>
          </font>
         </property>
         <property name="text">
-         <string>시작</string>
+         <string>삭제</string>
         </property>
        </widget>
       </item>

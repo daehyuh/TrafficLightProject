@@ -19,7 +19,7 @@ stop_check = False
 
 
 def get_hex():
-    target_url = "http://localhost:8933/get_hex" #API주소 16진수 데이터
+    target_url = "http://49.50.163.17:8933/get_hex" #API주소 16진수 데이터
     response = requests.post(target_url)
     print(type(response.text))
     return response.text
@@ -157,12 +157,12 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
             row = self.tableWidget.rowCount()
             for row in range(0, row):
-                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]])
+                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]], self.tableWidget.item(row, 2).text()])
             print(data)
             if len(data) != 0:
                 file = open(path, "w", newline="")
                 wr = csv.writer(file)
-                wr.writerow(["신호", "시간"])
+                wr.writerow(["신호", "시간", "스텝"])
                 for row in data:
                     wr.writerow(row)
                 file.close()
@@ -222,6 +222,7 @@ class WindowClass(QMainWindow, form_class):
     def resizeEvent(self, event):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         # self.start_button.resize(self.mainWindow.sizeHint())
         print("전체", self.centralwidget.width())
         print("테이블", self.tableWidget.width())
@@ -239,9 +240,9 @@ class WindowClass(QMainWindow, form_class):
         for key, value in signals.items():
             if value == 1:
                 activeData += key + " "
-        self.log(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝")
+        self.log(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + " 스텝")
         self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
-        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
+        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")), QTableWidgetItem(str(get_int_step())+" STEP")]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)

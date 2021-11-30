@@ -7,11 +7,11 @@ from pathlib import Path
 from time import sleep
 import os
 import pandas as pd
+import paramiko
 from PyQt5 import uic
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QFont, QStandardItemModel, QStandardItem, QColor, QIcon
 from PyQt5.QtWidgets import *
-import paramiko
 from scp import SCPClient, SCPException
 
 
@@ -55,7 +55,9 @@ class SSHManager:
 
 
 ssh_manager2 = SSHManager()  ##수신
-ssh_manager2.create_ssh_client("192.168.1.6", "user", "user")
+with open('ipsetting.txt', 'r') as f:
+    ip = f.read()
+ssh_manager2.create_ssh_client(ip, "user", "user")
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
 stop_check = False
@@ -80,7 +82,7 @@ def get_int_step():
 
 
 class StandardItem(QStandardItem):
-    def __init__(self, txt="", font_size=14, path="", set_bold=False, color=QColor(0, 0, 0)):
+    def __init__(self, txt="", font_size=16, path="", set_bold=False, color=QColor(0, 0, 0)):
         super().__init__()
 
         fnt = QFont("나눔스퀘어_ac", font_size)
@@ -114,6 +116,7 @@ class Thread(QThread):
         df2 = pd.read_csv("traffic.csv")
         inform_by_step = df2[df2['STEP'] == int(get_int_step())]
         self.PREVIOUS = self.inform_dict.copy()
+        self.PREVIOUS = self.inform_dict.copy()
         # print(int(get_int_step()), self.inform_dict, inform_by_step)
         for k in self.inform_dict.keys():
             if k in inform_by_step:
@@ -130,7 +133,7 @@ class Thread(QThread):
                         print(self.PREVIOUS)
                     self.signal.emit(self.PREVIOUS)
                     self.CURRENT_TIME = get_int_step()
-                sleep(0.5)
+                sleep(1)
 
 
 class WindowClass(QMainWindow, form_class):
@@ -138,7 +141,7 @@ class WindowClass(QMainWindow, form_class):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle("신호등")
-        self.setFont(QFont("나눔스퀘어_ac", 12))
+        self.setFont(QFont("나눔스퀘어_ac", 14))
         self.h1 = Thread(self)
         self.h1.signal.connect(self.change_traffic_light)
         self.h1.start()
@@ -146,7 +149,6 @@ class WindowClass(QMainWindow, form_class):
         self.save_button.clicked.connect(self.save_function)
         self.delete_button.clicked.connect(self.delete_function)
         self.event_log.setWindowTitle("신호등")
-        self.event_log.setFont(QFont("나눔스퀘어_ac", 12))
         self.set_tree_view()
 
     def log(self, record):
@@ -194,13 +196,12 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
             row = self.tableWidget.rowCount()
             for row in range(0, row):
-                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text(),
-                              self.tableWidget.item(row, 2).text()]])
+                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text()]])
             print(data)
             if len(data) != 0:
                 file = open(path, "w", newline="")
                 wr = csv.writer(file)
-                wr.writerow(["신호", "시간", "스텝"])
+                wr.writerow(["신호", "시간"])
                 for row in data:
                     wr.writerow(row)
                 file.close()
@@ -259,7 +260,6 @@ class WindowClass(QMainWindow, form_class):
     def resizeEvent(self, event):
         self.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         # self.start_button.resize(self.mainWindow.sizeHint())
         print("전체", self.centralwidget.width())
         print("테이블", self.tableWidget.width())
@@ -275,10 +275,8 @@ class WindowClass(QMainWindow, form_class):
         for key, value in signals.items():
             if value == 1:
                 activeData += key + " "
-        self.log(str(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝"))
         self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
-        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")),
-                 QTableWidgetItem(str(get_int_step()) + " 스텝")]
+        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S"))]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)

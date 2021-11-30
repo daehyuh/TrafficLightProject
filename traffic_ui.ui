@@ -87,8 +87,10 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QHeaderView::section {background-color:#909090;color:#FFFFFF;}
-section {background-color:#909090;color:#FFFFFF;}</string>
+         <string notr="true">QHeaderView::section {background-color:#909090;color:#FFFFFF;font:75 12pt &quot;맑은 고딕&quot;;
+}
+section {background-color:#909090;color:#FFFt: 75 12pt &quot;맑은 고딕&quot;;
+}</string>
         </property>
         <property name="editTriggers">
          <set>QAbstractItemView::NoEditTriggers</set>
@@ -106,7 +108,7 @@ section {background-color:#909090;color:#FFFFFF;}</string>
          <bool>false</bool>
         </attribute>
         <attribute name="horizontalHeaderDefaultSectionSize">
-         <number>200</number>
+         <number>297</number>
         </attribute>
         <attribute name="horizontalHeaderHighlightSections">
          <bool>false</bool>
@@ -137,11 +139,6 @@ section {background-color:#909090;color:#FFFFFF;}</string>
         <column>
          <property name="text">
           <string>TIME</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>STEP</string>
          </property>
         </column>
        </widget>
@@ -302,6 +299,18 @@ min-width: 100px;</string>
          <size>
           <width>16777215</width>
           <height>16777215</height>
+         </size>
+        </property>
+        <property name="sizeIncrement">
+         <size>
+          <width>50</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>50</width>
+          <height>50</height>
          </size>
         </property>
         <property name="lineWidth">

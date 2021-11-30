@@ -53,10 +53,11 @@ class SSHManager:
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         return stdout.readlines()
 
-
+ssh_manager = SSHManager()  ##송신
 ssh_manager2 = SSHManager()  ##수신
 with open('ipsetting.txt', 'r') as f:
     ip = f.read()
+ssh_manager.create_ssh_client("192.168.1.5", "user", "user")
 ssh_manager2.create_ssh_client(ip, "user", "user")
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
@@ -64,12 +65,16 @@ stop_check = False
 
 
 def get_hex():
-    ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve')
-    with open("signal_recieve", "r") as f2:
+    ssh_manager.get_file('/home/user/signal/signal', './signal_recieve_5')
+    ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve_6')
+    with open("signal_recieve_5", "r") as f2:
         item = f2.readline()
-        # print("\r\r\r\r ------,", item)
+        print("5,", item)
+    with open("signal_recieve_6", "r") as f2:
+        item = f2.readline()
+        print("6,", item)
     f2.close()
-    print("get_hex", item)
+    # print("get_hex", item)
     return item
 
 
@@ -78,7 +83,7 @@ def get_int_step():
         return int(get_hex()[13])
     except Exception as e:
         print("get_int_step exception:", e)
-        return None
+        return 0
 
 
 class StandardItem(QStandardItem):
@@ -126,11 +131,11 @@ class Thread(QThread):
         global stop_check
         while True:
             if stop_check:
-                print(self.CURRENT_TIME, get_int_step())
+                print("cur_time",self.CURRENT_TIME, get_int_step())
                 if self.CURRENT_TIME != get_int_step():
                     self.checkSignal()
                     if self.PREVIOUS is not self.inform_dict:
-                        print(self.PREVIOUS)
+                        print("prev", self.PREVIOUS)
                     self.signal.emit(self.PREVIOUS)
                     self.CURRENT_TIME = get_int_step()
                 sleep(1)

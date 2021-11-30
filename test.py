@@ -1,70 +1,61 @@
-import pandas as pd
+import paramiko
+from scp import SCPClient, SCPException
 
-import requests
+
+class SSHManager:
+    def __init__(self):
+        self.ssh_client = None
+
+    def create_ssh_client(self, hostname, username, password):
+        """Create SSH client session to remote server"""
+        if self.ssh_client is None:
+            self.ssh_client = paramiko.SSHClient()
+            self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.ssh_client.connect(hostname, username=username, password=password)
+        else:
+            print("SSH client session exist.")
+
+    def close_ssh_client(self):
+        """Close SSH client session"""
+        self.ssh_client.close()
+
+    def send_file(self, local_path, remote_path):
+        """Send a single file to remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.put(local_path, remote_path, preserve_times=True)
+        except SCPException:
+            raise SCPException.message
+
+    def get_file(self, remote_path, local_path):
+        """Get a single file from remote path"""
+        try:
+            with SCPClient(self.ssh_client.get_transport()) as scp:
+                scp.get(remote_path, local_path)
+        except SCPException:
+            raise SCPException.message
+
+    def send_command(self, command):
+        """Send a single command"""
+        stdin, stdout, stderr = self.ssh_client.exec_command(command)
+        return stdout.readlines()
+
+
+ssh_manager2 = SSHManager()  ##수신
+ssh_manager2.create_ssh_client("192.168.1.6", "user", "user")
+
+
+stop_check = False
 
 
 def get_hex():
-    target_url = "http://localhost:8933/get_hex" #API주소 16진수 데이터
-
-    response = requests.post(target_url)
-
-    return response.text
-
-
-def hex_to_step(hex_data):
-    step = hex_data[14:15]
-    return step
+    ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve')
+    with open("signal_recieve", "r") as f2:
+        item = f2.readline()
+        # print("\r\r\r\r ------,", item)
+    f2.close()
+    print(item)
+    return item
 
 
-def hex_to_time():
-    step = get_hex()[13:15]
-    return step
-
-
-def get_int_fulltime():
-    return int(get_hex()[33:35], 16)
-
-
-def get_int_time():
-    return int(get_hex()[31:33], 16)
-
-
-def get_int_step():
-    return int(get_hex()[14], 16)
-
-print(get_int_time())
-
-
-# df = pd.DataFrame(
-#     {'STEP': [0, 1, 2, 3, 4, 5, 6, 7], 'RED': [1, 1, 1, 1, 1, 1, 1, 1], 'YELLOW': [0, 0, 0, 1, 0, 0, 0, 0],
-#      'LEFT': [1, 1, 1, 0, 0, 0, 0, 0], 'GREEN': [0, 0, 0, 0, 0, 0, 0, 0]})
-# df = df.set_index('STEP')
-# df.to_csv("test.csv")
-#
-# df2 = pd.read_csv("test.csv")
-# print(df2)
-#
-# hex_data = get_hex()
-# step = hex_to_step(hex_data)
-# print(step)
-#
-# inform_dict = {"RED": 0, "YELLOW": 0, "LEFT": 0, "GREEN": 0}
-# inform_by_step = df2[df2['STEP'] == int(step)]
-#
-#
-# keys = inform_dict.keys()
-# print(keys)
-#
-# for k in inform_dict.keys():
-#     if k in inform_by_step:
-#         inform_dict[k] = int(inform_by_step[k])
-#
-# print(inform_dict)
-#
-# print(inform_by_step)
-
-
-
-
-
-
+get_hex()

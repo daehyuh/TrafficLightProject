@@ -5,7 +5,7 @@ from datetime import datetime
 from glob import glob
 from pathlib import Path
 from time import sleep
-
+import os
 import pandas as pd
 from PyQt5 import uic
 from PyQt5.QtCore import *
@@ -60,8 +60,6 @@ ssh_manager2.create_ssh_client("192.168.1.6", "user", "user")
 form_class = uic.loadUiType("traffic_ui.ui")[0]
 stop_check = False
 
-import os
-
 
 def get_hex():
     ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve')
@@ -69,19 +67,16 @@ def get_hex():
         item = f2.readline()
         # print("\r\r\r\r ------,", item)
     f2.close()
-    print(item)
-    print(item[13])
+    print("get_hex", item)
     return item
 
 
-def hex_to_step():
-    step = get_hex()[14:15]
-    return step
-
-
 def get_int_step():
-    print(int(get_hex()[13]))
-    return int(get_hex()[13])
+    try:
+        return int(get_hex()[13])
+    except Exception as e:
+        print("get_int_step exception:", e)
+        return None
 
 
 class StandardItem(QStandardItem):
@@ -109,17 +104,10 @@ class Thread(QThread):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        self.data = []
-        self.sum = []
-        f = open("traffic.csv", "r", encoding="utf-8")
-        rdr = csv.reader(f)
-        for idx, line in enumerate(rdr):
-            self.data.extend([line])  # 인풋 방식 모름
-            self.sum.append(self.data[idx][:-1])
-        f.close()
         self.inform_dict = {"RED": 0, "YELLOW": 0, "LEFT": 0, "GREEN": 0}
         self.PREVIOUS = self.inform_dict.copy()
         self.CURRENT_TIME = get_int_step()
+        print("test")
         self.checkSignal()
 
     def checkSignal(self):
@@ -140,10 +128,9 @@ class Thread(QThread):
                     self.checkSignal()
                     if self.PREVIOUS is not self.inform_dict:
                         print(self.PREVIOUS)
-
                     self.signal.emit(self.PREVIOUS)
                     self.CURRENT_TIME = get_int_step()
-                sleep(0.1)
+                sleep(0.5)
 
 
 class WindowClass(QMainWindow, form_class):
@@ -207,7 +194,8 @@ class WindowClass(QMainWindow, form_class):
             self.tableWidget.setSelectionMode(QAbstractItemView.NoSelection)
             row = self.tableWidget.rowCount()
             for row in range(0, row):
-                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text(), self.tableWidget.item(row, 2).text()]])
+                data.extend([[self.tableWidget.item(row, 0).text(), self.tableWidget.item(row, 1).text(),
+                              self.tableWidget.item(row, 2).text()]])
             print(data)
             if len(data) != 0:
                 file = open(path, "w", newline="")
@@ -289,7 +277,8 @@ class WindowClass(QMainWindow, form_class):
                 activeData += key + " "
         self.log(str(activeData + "데이터를 받았습니다\n" + str(get_int_step()) + "스텝"))
         self.event_log.verticalScrollBar().setValue(self.event_log.verticalScrollBar().maximum())
-        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")), QTableWidgetItem(str(get_int_step())+" 스텝")]
+        lists = [QTableWidgetItem(activeData), QTableWidgetItem(datetime.today().strftime("%Y/%m/%d %H:%M:%S")),
+                 QTableWidgetItem(str(get_int_step()) + " 스텝")]
         for index, row in enumerate(lists):
             self.tableWidget.setItem(rowPosition, index, row)
             self.tableWidget.horizontalHeader().setSectionResizeMode(index, QHeaderView.Stretch)
@@ -306,7 +295,6 @@ class WindowClass(QMainWindow, form_class):
                                       "min-width: 100px;")
 
         for key, value in signals.items():
-            print(type(key), type(value))
             if value == 1:
                 if key.__eq__("RED"):
                     self.RED.setStyleSheet("background-color: rgb(255, 0, 0);\n"

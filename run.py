@@ -53,11 +53,10 @@ class SSHManager:
         stdin, stdout, stderr = self.ssh_client.exec_command(command)
         return stdout.readlines()
 
-ssh_manager = SSHManager()  ##송신
+
 ssh_manager2 = SSHManager()  ##수신
 with open('ipsetting.txt', 'r') as f:
     ip = f.read()
-ssh_manager.create_ssh_client("192.168.1.5", "user", "user")
 ssh_manager2.create_ssh_client(ip, "user", "user")
 
 form_class = uic.loadUiType("traffic_ui.ui")[0]
@@ -65,25 +64,29 @@ stop_check = False
 
 
 def get_hex():
-    ssh_manager.get_file('/home/user/signal/signal', './signal_recieve_5')
-    ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve_6')
-    with open("signal_recieve_5", "r") as f2:
+    ssh_manager2.get_file('/home/user/signal/signal', './signal_recieve')
+    with open("signal_recieve", "r") as f2:
         item = f2.readline()
-        print("5,", item)
-    with open("signal_recieve_6", "r") as f2:
-        item = f2.readline()
-        print("6,", item)
+        # print("\r\r\r\r ------,", item)
     f2.close()
-    # print("get_hex", item)
+    print("get_hex", item)
     return item
 
 
+prev = 0
+
+
 def get_int_step():
+    global prev
+
     try:
-        return int(get_hex()[13])
+        item = int(get_hex()[13])
+        prev = item
+
+        return item
     except Exception as e:
         print("get_int_step exception:", e)
-        return 0
+        return prev
 
 
 class StandardItem(QStandardItem):
@@ -113,32 +116,28 @@ class Thread(QThread):
         self.parent = parent
         self.inform_dict = {"RED": 0, "YELLOW": 0, "LEFT": 0, "GREEN": 0}
         self.PREVIOUS = self.inform_dict.copy()
-        self.CURRENT_TIME = get_int_step()
+        self.df = pd.read_csv("traffic.csv")
         print("test")
-        self.checkSignal()
 
     def checkSignal(self):
-        df2 = pd.read_csv("traffic.csv")
-        inform_by_step = df2[df2['STEP'] == int(get_int_step())]
-        self.PREVIOUS = self.inform_dict.copy()
+        df = self.df
+        inform_by_step = df[df['STEP'] == int(get_int_step())]
+        # self.PREVIOUS = self.inform_dict.copy()
         self.PREVIOUS = self.inform_dict.copy()
         # print(int(get_int_step()), self.inform_dict, inform_by_step)
         for k in self.inform_dict.keys():
             if k in inform_by_step:
                 self.inform_dict[k] = int(inform_by_step[k])
+                print(self.inform_dict[k], int(inform_by_step[k]))
 
     def run(self):
         global stop_check
         while True:
+            sleep(0.01)
             if stop_check:
-                print("cur_time",self.CURRENT_TIME, get_int_step())
-                if self.CURRENT_TIME != get_int_step():
-                    self.checkSignal()
-                    if self.PREVIOUS is not self.inform_dict:
-                        print("prev", self.PREVIOUS)
-                    self.signal.emit(self.PREVIOUS)
-                    self.CURRENT_TIME = get_int_step()
-                sleep(1)
+                self.checkSignal()
+                if self.PREVIOUS != self.inform_dict:
+                    self.signal.emit(self.inform_dict)
 
 
 class WindowClass(QMainWindow, form_class):
@@ -179,7 +178,7 @@ class WindowClass(QMainWindow, form_class):
         global stop_check
 
         buttonReply = QMessageBox.information(
-            self, '저장', "정말로 저장 하시겠습니까?",
+            self, '저장', "저장 하시겠습니까?",
             QMessageBox.Yes | QMessageBox.No
         )
         if buttonReply == QMessageBox.Yes:
@@ -187,7 +186,7 @@ class WindowClass(QMainWindow, form_class):
             self.start_button.setText("실행")
             self.start_button.repaint()
             data = []
-            root = "C:/traffic_data/" + datetime.today().strftime("%Y-%m-%d") + "/"
+            root = "traffic_data/" + datetime.today().strftime("%Y-%m-%d") + "/"
             file_name = datetime.today().strftime("%Y-%m-%d %H-%M-%S")
             extension = ".csv"
             path = root + file_name + extension
@@ -218,18 +217,26 @@ class WindowClass(QMainWindow, form_class):
             pass
 
     def delete_function(self):
-        if len(self.treeView.selectedIndexes()) == 1:
-            root = self.check_sel_root()
-            if os.path.isfile(root):
-                os.remove(root)
-                self.set_tree_view()
-                self.log(root + "\n파일을 삭제했습니다")
+        buttonReply = QMessageBox.information(
+            self, '삭제', "정말로 삭제 하시겠습니까?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if buttonReply == QMessageBox.Yes:
+            if len(self.treeView.selectedIndexes()) == 1:
+                root = self.check_sel_root()
+                if os.path.isfile(root):
+                    os.remove(root)
+                    self.set_tree_view()
+                    self.log(root + "\n파일을 삭제했습니다")
+        else:
+            pass
+
 
     def check_sel_root(self):
         if len(self.treeView.selectedIndexes()) != 0:
             index = self.treeView.selectedIndexes()[0]
             print(index.data())
-            root = "C:/traffic_data/"
+            root = "traffic_data/"
             file = index.model().itemFromIndex(index).text()
             folder = file.split()[0] + "/"
             return root + folder + file
@@ -240,7 +247,7 @@ class WindowClass(QMainWindow, form_class):
 
         treeModel = QStandardItemModel()
         rootNode = treeModel.invisibleRootItem()
-        paths = glob("C:/traffic_data/*")
+        paths = glob("traffic_data/*")
 
         for path in paths:
             folder = StandardItem(Path(path).stem, 16, path)
